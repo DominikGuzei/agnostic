@@ -1,13 +1,12 @@
-# purpose
+# agnostic
 
 Minimal JavaScript architecture to build framework-agnostic and delivery mechanism independent applications
 
 ## Getting Started
-Install the module with: `npm install purpose`
+Install the module with: `npm install agnostic`
 
 ```javascript
-var purpose = require('purpose');
-purpose.awesome(); // "awesome"
+var agnostic = require('agnostic');
 ```
 
 ## Documentation

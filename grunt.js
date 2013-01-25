@@ -1,18 +1,19 @@
 module.exports = function(grunt) {
+  "use strict";
 
   // Project configuration.
   grunt.initConfig({
     pkg: '<json:package.json>',
-    test: {
-      files: ['test/**/*.js']
-    },
+
     lint: {
-      files: ['grunt.js', 'lib/**/*.js', 'test/**/*.js']
+      files: ['grunt.js']
     },
+
     watch: {
-      files: '<config:lint.files>',
-      tasks: 'default'
+      files: ['grunt.js', 'src/**/*.js', 'spec/**/*.js'],
+      tasks: 'build'
     },
+
     jshint: {
       options: {
         curly: true,
@@ -27,13 +28,40 @@ module.exports = function(grunt) {
         eqnull: true,
         node: true
       },
+
       globals: {
-        exports: true
+        exports: true,
+        window: true,
+        define: true,
+        describe: true,
+        expect: true,
+        it: true
+      }
+    },
+
+    min: {
+      dist: {
+        src: 'src/agnostic.js',
+        dest: 'built/agnostic.min.js'
+      }
+    },
+
+    mochaTest: {
+      files: ['spec/spec-setup.js', 'spec/**/*.spec.js']
+    },
+
+    mochaTestConfig: {
+      options: {
+        reporter: 'spec',
+        globals: 'define'
       }
     }
   });
 
-  // Default task.
-  grunt.registerTask('default', 'lint test');
+  grunt.loadNpmTasks('grunt-mocha-test');
+
+  grunt.registerTask('test', 'mochaTest');
+  grunt.registerTask('build', 'lint min mochaTest');
+  grunt.registerTask('default', 'watch');
 
 };
