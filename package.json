@@ -33,7 +33,8 @@
     "chai": "*",
     "sinon": "*",
     "sinon-chai": "*",
-    "grunt-contrib-uglify": "*"
+    "grunt-contrib-uglify": "*",
+    "Faker": "*"
   },
   "keywords": []
 }

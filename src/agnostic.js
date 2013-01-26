@@ -13,6 +13,27 @@
 
   var agnostic = {};
 
+  agnostic.Injector = {
+
+    registeredInterfaces: {},
+
+    get: function(interfaceName) {
+      if(interfaceName === null || typeof(interfaceName) !== 'string') throw new TypeError();
+        
+      var implementation = this.registeredInterfaces[interfaceName];
+
+      if(implementation === undefined) {
+        throw new Error("No implementation found for interface '" + interfaceName + "'");
+      }
+
+      return implementation;
+    },
+
+    register: function(interfaceName, implementation) {
+      this.registeredInterfaces[interfaceName] = implementation;
+    }
+  }
+
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
     define([], function () { return agnostic; });
