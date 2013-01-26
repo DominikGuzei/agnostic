@@ -2,6 +2,8 @@
 
 Minimal JavaScript architecture to build framework-agnostic and delivery mechanism independent applications
 
+[![Build Status](https://travis-ci.org/DominikGuzei/agnostic.png?branch=master)](https://travis-ci.org/DominikGuzei/agnostic)
+
 ## Getting Started
 Install the module with: `npm install agnostic`
 
