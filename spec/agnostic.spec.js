@@ -1,7 +1,5 @@
 "use strict";
 
-var agnosticFilePath = '../built/agnostic.min'
-
 describe('agnostic', function(){
 
   describe('running in browser environment with AMD available', function() {

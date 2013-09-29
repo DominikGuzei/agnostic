@@ -29,12 +29,11 @@
   },
   "devDependencies": {
     "grunt": "~0.3.17",
-    "grunt-mocha-test": "*",
-    "chai": "*",
-    "sinon": "*",
-    "sinon-chai": "*",
-    "grunt-contrib-uglify": "*",
-    "Faker": "*"
+    "grunt-mocha-test": "~0.0.1",
+    "chai": "~1.4.2",
+    "sinon": "~1.5.2",
+    "sinon-chai": "~2.3.1",
+    "Faker": "0.5.6"
   },
   "keywords": []
 }

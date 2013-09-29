@@ -1,6 +1,6 @@
 "use strict";
 
-var agnostic = require('../../built/agnostic.min');
+var agnostic = require(agnosticFilePath);
 var Faker = require('Faker')
 
 describe('agnostic.Injector', function(){
@@ -15,13 +15,13 @@ describe('agnostic.Injector', function(){
 
   describe('allows to register and retrieve implementations for named interfaces', function() {
 
-    describe('throws understandable errors when used in the wrong way', function() {
+    describe('Throws understandable errors when used in the wrong way:', function() {
 
-      it('throws an error if no interface name is given', function() {
+      it('throws an error if no interface name is given.', function() {
         expect( this.Injector.get ).to.throw(TypeError);
       });
 
-      it('throws a type error if the interface name is not of type string', function() {
+      it('throws a type error if the interface name is not of type string.', function() {
         var Injector = this.Injector;
 
         function callGetWithObject() { Injector.get({}); }
@@ -33,7 +33,7 @@ describe('agnostic.Injector', function(){
         expect( callGetWithArray ).to.throw(TypeError);
       });
 
-      it('throws an error if the given interface was never registered', function() {
+      it('throws an error if the given interface was never registered.', function() {
         var Injector = this.Injector,
             fakeInterfaceName = Faker.random.bs_noun() + 'Interface';
 
@@ -45,9 +45,9 @@ describe('agnostic.Injector', function(){
 
     });
 
-    describe('returns the correct implementations when used correctly', function() {
+    describe('Returns the right implementations when used correctly:', function() {
 
-      it('returns the registered implementation of an interface', function() {
+      it('returns the registered implementation of an interface.', function() {
         var interfaceName = 'TestInterface',
             registeredImplementation = {};
 
@@ -57,7 +57,7 @@ describe('agnostic.Injector', function(){
         expect(returnedImplementation).to.equal(registeredImplementation);
       });
 
-      it('allows to register and retrieve multiple interfaces', function() {
+      it('allows to register and retrieve multiple interfaces.', function() {
         var interfaceOneName = 'InterfaceOne',
             interfaceOneImplementation = { one: true },
             interfaceTwoName = 'InterfaceTwo',
