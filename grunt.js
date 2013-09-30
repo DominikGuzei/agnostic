@@ -6,11 +6,11 @@ module.exports = function(grunt) {
     pkg: '<json:package.json>',
 
     lint: {
-      files: ['grunt.js', 'src/**/*.ts']
+      files: ['grunt.js', 'src/**/*.js']
     },
 
     watch: {
-      files: ['grunt.js', 'src/**/*.ts', 'spec/**/*.js'],
+      files: ['grunt.js', 'src/**/*.js', 'spec/**/*.js'],
       tasks: 'test'
     },
 
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
         eqeqeq: true,
         immed: true,
         latedef: true,
-        newcap: true,
+        newcap: false,
         noarg: true,
         sub: true,
         undef: true,
@@ -41,7 +41,12 @@ module.exports = function(grunt) {
 
     concat: {
       files: {
-        src: ['src/agnostic.js'],
+
+        src: ['src/Class.js', 
+              'src/Interface.js',
+              'src/agnostic.js',
+              'src/agnostic/Injector.js'],
+
         dest: 'built/agnostic.js'
       }
     },
@@ -54,8 +59,7 @@ module.exports = function(grunt) {
     },
 
     mochaTest: {
-      development: ['spec/spec-setup-development.js', 'spec/**/*.spec.js'],
-      production: ['spec/spec-setup-production.js', 'spec/**/*.spec.js']
+      development: ['spec/spec-setup-development.js', 'spec/**/*.spec.js']
     },
 
     mochaTestConfig: {
@@ -69,7 +73,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('test', 'lint concat mochaTest:development');
-  grunt.registerTask('build', 'lint min mochaTest:production');
+  grunt.registerTask('build', 'lint min');
   grunt.registerTask('default', 'watch');
 
 };

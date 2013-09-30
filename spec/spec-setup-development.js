@@ -10,7 +10,7 @@ global.swallow = function (thrower) {
     } catch (e) { }
 };
 
-global.agnosticFilePath = '../built/agnostic';
+global.agnosticFilePath = '../src/agnostic';
 
 global.invalidateRequireCacheFor = function(filePath) {
   delete require.cache[require.resolve(filePath)]; // invalidate require cache

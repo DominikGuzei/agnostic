@@ -1,8 +1,53 @@
 "use strict";
 
-var agnostic = require(agnosticFilePath);
+var Injector = require('../src/agnostic/Injector').Injector;
+var Class = require('../src/Class').Class;
+var Interface = require('../src/Interface').Interface;
 var Faker = require('Faker')
 
+describe('agnostic.Injector:', function(){
+
+  describe('Use Case: map to singleton,', function() {
+
+    beforeEach(function() {
+      this.TestInterface = Interface('TestInterface', {});
+      this.TestClass = Class('TestClass', {});
+
+      this.injector = new Injector();
+    });
+
+    it('maps given interface to a single instance of given class', function() {
+
+      var Injectee1 = Class({
+        Dependencies: {
+          testInterfaceInstance: this.TestInterface
+        }
+      });
+
+      var injectee1 = new Injectee1();
+
+      var Injectee2 = Class({
+        Dependencies: {
+          blaBlub: this.TestInterface
+        }
+      });
+
+      var injectee2 = new Injectee2();
+
+      this.injector.map(this.TestInterface).toSingleton(this.TestClass);
+      this.injector.injectInto(injectee1);
+      this.injector.injectInto(injectee2);
+
+      expect(injectee1.testInterfaceInstance).to.be.instanceof(this.TestClass);
+      expect(injectee2.blaBlub).to.be.equal(injectee1.testInterfaceInstance);
+
+    });
+
+  });
+
+});
+
+/*
 describe('agnostic.Injector', function(){
 
   beforeEach(function() {
@@ -78,3 +123,4 @@ describe('agnostic.Injector', function(){
   });
 
 });
+*/
