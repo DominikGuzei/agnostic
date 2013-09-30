@@ -3,6 +3,7 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
+    
     pkg: '<json:package.json>',
 
     lint: {
@@ -42,10 +43,14 @@ module.exports = function(grunt) {
     concat: {
       files: {
 
-        src: ['src/Class.js', 
+        src: [
+              'src/Class.js', 
               'src/Interface.js',
               'src/agnostic.js',
-              'src/agnostic/Injector.js'],
+              'src/agnostic/injection/SingletonProvider.js',
+              'src/agnostic/injection/InjectionMapping.js',
+              'src/agnostic/injection/Injector.js'
+             ],
 
         dest: 'built/agnostic.js'
       }
@@ -53,7 +58,7 @@ module.exports = function(grunt) {
 
     min: {
       dist: {
-        src: 'src/agnostic.js',
+        src: 'built/agnostic.js',
         dest: 'built/agnostic.min.js'
       }
     },
@@ -71,6 +76,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-closure-compiler');
 
   grunt.registerTask('test', 'lint concat mochaTest:development');
   grunt.registerTask('build', 'lint min');

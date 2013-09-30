@@ -65,7 +65,7 @@
   }
   // expose on agnostic namespace (node)
   else {
-    var Class = require('./Class').Class;
+    var Class = require('./Class')['Class'];
     globalNamespace.Interface = defineInterfaceModule(Class);
   }
 

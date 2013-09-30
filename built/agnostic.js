@@ -298,7 +298,7 @@
   }
   // expose on agnostic namespace (node)
   else {
-    var Class = require('./Class').Class;
+    var Class = require('./Class')['Class'];
     globalNamespace.Interface = defineInterfaceModule(Class);
   }
 
@@ -322,7 +322,127 @@
 (function (globalNamespace) {
   "use strict";
 
-  function defineInjectorModule(Class) {
+  function defineSingletonProviderModule(Class) {
+
+    return Class({
+
+      _type: null,
+      _instance : null,
+
+      initialize: function(type) {
+        this._type = type;
+      },
+
+      provideInstance: function() {
+        return this._instance || this._createSingleton();
+      },
+
+      getType: function() {
+        return this._type;
+      },
+
+      _createSingleton: function() {
+        return this._instance = new this._type();
+      }
+
+    });
+
+  }
+
+  // module dependencies
+  var Class;
+
+  // Return as AMD module or attach to head object
+  if (typeof define !== "undefined") {
+    define('agnostic/injection/SingletonProvider', ['Class'], function (Class) { 
+      return defineSingletonProviderModule(Class);
+    });
+  } 
+  // expose on agnostic namespace (browser)
+  else if (typeof window !== "undefined") {
+    /** @expose */
+    Class = globalNamespace['Class'];
+    globalNamespace['agnostic']['SingletonProvider'] = defineSingletonProviderModule(Class);
+  }
+  // expose as node module
+  else {
+    Class = require('../../../src/Class')['Class'];
+    globalNamespace.SingletonProvider = defineSingletonProviderModule(Class);
+  }
+  
+}(typeof define !== "undefined" || typeof window === "undefined" ? exports : window));
+(function (globalNamespace) {
+  "use strict";
+
+  function defineInjectionMappingModule(Class, SingletonProvider) {
+
+    return Class({
+
+      _requestType: null,
+      _responseType: null,
+      _dependencyProvider: null,
+
+      initialize: function(requestType) {
+        this._requestType = requestType;
+      },
+
+      toSingleton: function(responseType) {
+        this._responseType = responseType;
+        this._dependencyProvider = new SingletonProvider(responseType);
+
+        return this;
+      },
+
+      getProvider: function() {
+        return this._dependencyProvider;
+      },
+
+      getResponseType: function() {
+        return this._responseType;
+      },
+
+      getRequestType: function() {
+        return this._requestType;
+      },
+
+      getInstance: function() {
+        return this._dependencyProvider.provideInstance();
+      }
+
+    });
+
+  }
+
+  // module dependencies
+  var Class, SingletonProvider;
+
+  // Return as AMD module or attach to head object
+  if (typeof define !== "undefined") {
+    define('agnostic/injection/InjectionMapping', ['Class', 'SingletonProvider'], function (Class, SingletonProvider) { 
+      return defineInjectionMappingModule(Class, SingletonProvider);
+    });
+  } 
+  // expose on agnostic namespace (browser)
+  else if (typeof window !== "undefined") {
+    /** @expose */
+    Class = globalNamespace['Class'];
+    SingletonProvider = globalNamespace['SingletonProvider'];
+
+    globalNamespace['agnostic']['InjectionMapping'] = defineInjectionMappingModule(Class, SingletonProvider);
+  }
+  // expose as node module
+  else {
+    Class = require('../../../src/Class')['Class'];
+    SingletonProvider = require('./SingletonProvider').SingletonProvider;
+
+    globalNamespace.InjectionMapping = defineInjectionMappingModule(Class, SingletonProvider);
+  }
+  
+}(typeof define !== "undefined" || typeof window === "undefined" ? exports : window));
+(function (globalNamespace) {
+  "use strict";
+
+  function defineInjectorModule(Class, InjectionMapping) {
 
     return Class({
 
@@ -330,23 +450,7 @@
 
       map: function(type) {
 
-        var mapping = {
-          type: type,
-          responseType: null,
-          responseInstance: null,
-
-          toSingleton: function(type) {
-            this.responseType = type;
-          },
-
-          provide: function() {
-            return this.responseInstance || this._createResponseInstance();
-          },
-
-          _createResponseInstance: function() {
-            return this.responseInstance = new this.responseType();
-          }
-        };
+        var mapping = new InjectionMapping(type);
 
         this._typeMappings.push(mapping);
 
@@ -356,14 +460,20 @@
       injectInto: function(injectee) {
 
         if(injectee && injectee.Dependencies) {
-          var propertyName, neededType, dependencies = injectee.Dependencies;
+          var propertyName, neededType, instance, dependencies = injectee.Dependencies;
 
           for(propertyName in dependencies) {
 
             if(dependencies.hasOwnProperty(propertyName)) {
               neededType = dependencies[propertyName];
+              instance = this.getInstanceFor(neededType);
 
-              injectee[propertyName] = this.getInstanceFor(neededType);
+              if(instance != null) {
+                injectee[propertyName] = instance;
+              } 
+              else {
+                throw new Error('Type ' + neededType + ' is required by ' + injectee + ' but was not mapped on the injector.');
+              }
             }
           }
 
@@ -371,13 +481,17 @@
       },
 
       getInstanceFor: function(neededType) {
-        var mapping;
+        var mapping, instance = null;
 
         for(var index = 0; index < this._typeMappings.length; index++) {
           mapping = this._typeMappings[index];
 
-          if(mapping.type === neededType) {
-            return mapping.provide();
+          if(mapping.getRequestType() === neededType) {
+
+            instance = mapping.getInstance();
+            this.injectInto(instance);
+
+            return instance;
           }
         }
       }
@@ -386,21 +500,28 @@
 
   }
 
+  var Class, InjectionMapping;
+
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
-    define('agnostic.Injector', ['Class'], function (Class) { 
-      return defineInjectorModule(Class);
+    define('agnostic/injection/Injector', ['Class', 'InjectionMapping'], function (Class, InjectionMapping) { 
+      return defineInjectorModule(Class, InjectionMapping);
     });
   } 
   // expose on agnostic namespace (browser)
   else if (typeof window !== "undefined") {
     /** @expose */
-    globalNamespace['agnostic']['Injector'] = defineInjectorModule(globalNamespace['Class']);
+    Class = globalNamespace['Class'],
+    InjectionMapping = globalNamespace['InjectionMapping'];
+
+    globalNamespace['agnostic']['Injector'] = defineInjectorModule(Class, InjectionMapping);
   }
   // expose on agnostic namespace (node)
   else {
-    var Class = require('../Class').Class;
-    globalNamespace.Injector = defineInjectorModule(Class);
+    Class = require('../../../src/Class')['Class'];
+    InjectionMapping = require('../../../src/agnostic/injection/InjectionMapping').InjectionMapping;
+
+    globalNamespace.Injector = defineInjectorModule(Class, InjectionMapping);
   }
   
 }(typeof define !== "undefined" || typeof window === "undefined" ? exports : window));
