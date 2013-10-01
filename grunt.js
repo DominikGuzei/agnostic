@@ -46,7 +46,7 @@ module.exports = function(grunt) {
         src: [
               'src/Class.js', 
               'src/Interface.js',
-              'src/agnostic.js',
+              'src/agnostic/agnostic.js',
               'src/agnostic/injection/SingletonProvider.js',
               'src/agnostic/injection/InjectionMapping.js',
               'src/agnostic/injection/Injector.js'
@@ -64,12 +64,12 @@ module.exports = function(grunt) {
     },
 
     mochaTest: {
-      development: ['spec/spec-setup-development.js', 'spec/**/*.spec.js']
+      development: ['spec/node/spec-node-setup.js', 'spec/agnostic/**/*.spec.js']
     },
 
     mochaTestConfig: {
       options: {
-        reporter: 'spec',
+        reporter: 'min',
         globals: 'define'
       }
     }

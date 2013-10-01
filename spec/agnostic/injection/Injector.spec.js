@@ -1,30 +1,27 @@
 "use strict";
 
-var Injector = require('../../../src/agnostic/injection/Injector').Injector;
-var Class = require('../../../src/Class').Class;
-var Interface = require('../../../src/Interface').Interface;
-var Faker = require('Faker')
+var Injector = agnostic.injection.Injector;
 
 describe('agnostic.Injector:', function(){
 
   describe('Use Case: map to singleton,', function() {
 
     beforeEach(function() {
-      this.TestInterface = Interface('TestInterface', {});
-      this.TestClass = Class('TestClass', {});
+      this.TestInterface = Interface('TestInterface', {}, true);
+      this.TestClass = Class('TestClass', {}, true);
 
-      this.InjecteeClass1 = Class({
+      this.InjecteeClass1 = Class('InjecteeClass1', {
         Dependencies: {
           testInterfaceInstance: this.TestInterface
         }
-      });
+      }, true);
 
-      this.InjecteeClass2 = Class({
+      this.InjecteeClass2 = Class('InjecteeClass2', {
         Dependencies: {
           testInterfaceInstance: this.TestInterface,
           injectee1Instance: this.InjecteeClass1
         }
-      });
+      }, true);
 
       this.injector = new Injector();
     });

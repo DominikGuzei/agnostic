@@ -1,15 +1,13 @@
 "use strict";
 
-var Class = require('../../../src/Class').Class;
-
-var SingletonProvider = require('../../../src/agnostic/injection/SingletonProvider').SingletonProvider;
+var SingletonProvider = agnostic.injection.SingletonProvider;
 
 describe('agnostic.injection.SingletonProvider:', function(){
 
   describe('initializing singleton provider with a class type', function() {
 
     beforeEach(function() {
-      this.TestClass = Class({});
+      this.TestClass = Class('TestClass', {}, true);
       this.singletonProvider = new SingletonProvider(this.TestClass);
     });
 

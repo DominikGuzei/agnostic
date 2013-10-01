@@ -3,7 +3,7 @@
 
   function defineInjectionMappingModule(Class, SingletonProvider) {
 
-    return Class({
+    return Class('agnostic.injection.InjectionMapping', {
 
       _requestType: null,
       _responseType: null,
@@ -53,9 +53,9 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'];
-    SingletonProvider = globalNamespace['SingletonProvider'];
+    SingletonProvider = globalNamespace.agnostic.injection.SingletonProvider;
 
-    globalNamespace['agnostic']['InjectionMapping'] = defineInjectionMappingModule(Class, SingletonProvider);
+    defineInjectionMappingModule(Class, SingletonProvider);
   }
   // expose as node module
   else {

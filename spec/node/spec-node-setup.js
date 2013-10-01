@@ -10,10 +10,23 @@ global.swallow = function (thrower) {
     } catch (e) { }
 };
 
-global.agnosticFilePath = '../src/agnostic';
+global.agnosticFilePath = '../../src/agnostic/agnostic';
 
 global.invalidateRequireCacheFor = function(filePath) {
   delete require.cache[require.resolve(filePath)]; // invalidate require cache
+};
+
+global.Class = require('../../src/Class').Class;
+global.Interface = require('../../src/Interface').Interface;
+
+global.agnostic = {
+
+	injection: {
+		SingletonProvider: require('../../src/agnostic/injection/SingletonProvider').SingletonProvider,
+		InjectionMapping: require('../../src/agnostic/injection/InjectionMapping').InjectionMapping,
+		Injector: require('../../src/agnostic/injection/Injector').Injector,
+	}
+
 };
 
 var sinonChai = require("sinon-chai");

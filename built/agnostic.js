@@ -22,12 +22,11 @@
    * @returns {function()} constructor The constructor of the created class
    * @expose
    */
-  var Class = function (classPath, classDefinition) {
+  var Class = function (classPath, classDefinition, local) {
     var SuperClass, implementations, NewClass;
 
-    if(arguments.length < 2) {
-      classDefinition = classPath;
-      classPath = null;
+    if(typeof classPath !== 'string') {
+      throw new Error('Please give your class a name. Pass "true" as last parameter to avoid global namespace pollution');
     }
 
     SuperClass = classDefinition['Extends'] || null;
@@ -49,21 +48,17 @@
       }
     }
 
-    if(classPath) {
-      applyConstructorName(NewClass, classPath);
-    }
+    applyConstructorName(NewClass, classPath);
 
     Class['inherit'](NewClass, SuperClass);
 
     Class['implement'](NewClass, implementations);
 
-    if(classPath) {
-      applyClassNameToPrototype(NewClass, classPath);
-    }
+    applyClassNameToPrototype(NewClass, classPath);
 
     Class['extend'](NewClass, classDefinition, true);
 
-    if(classPath != null) {
+    if(!local) {
       Class['namespace'](classPath, NewClass);
     }
 
@@ -198,7 +193,7 @@
    */
   Class['namespace'] = function (namespacePath, exposedObject) {
 
-    if(globalNamespace) {
+    if(typeof globalNamespace['define'] === "undefined") {
       var classPathArray, className, currentNamespace, currentPathItem, index;
     
       classPathArray = namespacePath.split('.');
@@ -253,11 +248,10 @@
       };
     }
 
-    var Interface = function(path, definition) {
+    var Interface = function(path, definition, local) {
 
-      if(arguments.length < 2 && typeof path === 'object') {
-        definition = path;
-        path = 'Anonymous';
+      if(typeof path !== 'string') {
+        throw new Error('Please give your interface a name. Pass "true" as last parameter to avoid global namespace pollution');
       }
 
       var NewInterface = function() {},
@@ -276,7 +270,10 @@
         }
       }
 
-      Class['namespace'](path, NewInterface);
+      if(!local) {
+        Class['namespace'](path, NewInterface);
+      }
+      
       NewInterface.toString = function () { return interfaceName; };
 
       return NewInterface;
@@ -324,7 +321,7 @@
 
   function defineSingletonProviderModule(Class) {
 
-    return Class({
+    return Class('agnostic.injection.SingletonProvider', {
 
       _type: null,
       _instance : null,
@@ -362,7 +359,7 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'];
-    globalNamespace['agnostic']['SingletonProvider'] = defineSingletonProviderModule(Class);
+    defineSingletonProviderModule(Class);
   }
   // expose as node module
   else {
@@ -376,7 +373,7 @@
 
   function defineInjectionMappingModule(Class, SingletonProvider) {
 
-    return Class({
+    return Class('agnostic.injection.InjectionMapping', {
 
       _requestType: null,
       _responseType: null,
@@ -426,9 +423,9 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'];
-    SingletonProvider = globalNamespace['SingletonProvider'];
+    SingletonProvider = globalNamespace.agnostic.injection.SingletonProvider;
 
-    globalNamespace['agnostic']['InjectionMapping'] = defineInjectionMappingModule(Class, SingletonProvider);
+    defineInjectionMappingModule(Class, SingletonProvider);
   }
   // expose as node module
   else {
@@ -444,7 +441,7 @@
 
   function defineInjectorModule(Class, InjectionMapping) {
 
-    return Class({
+    return Class('agnostic.injection.Injector', {
 
       _typeMappings: [],
 
@@ -512,9 +509,9 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'],
-    InjectionMapping = globalNamespace['InjectionMapping'];
+    InjectionMapping = globalNamespace.agnostic.injection.InjectionMapping;
 
-    globalNamespace['agnostic']['Injector'] = defineInjectorModule(Class, InjectionMapping);
+    globalNamespace.agnostic.injection.Injector = defineInjectorModule(Class, InjectionMapping);
   }
   // expose on agnostic namespace (node)
   else {

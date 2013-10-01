@@ -20,11 +20,10 @@
       };
     }
 
-    var Interface = function(path, definition) {
+    var Interface = function(path, definition, local) {
 
-      if(arguments.length < 2 && typeof path === 'object') {
-        definition = path;
-        path = 'Anonymous';
+      if(typeof path !== 'string') {
+        throw new Error('Please give your interface a name. Pass "true" as last parameter to avoid global namespace pollution');
       }
 
       var NewInterface = function() {},
@@ -43,7 +42,10 @@
         }
       }
 
-      Class['namespace'](path, NewInterface);
+      if(!local) {
+        Class['namespace'](path, NewInterface);
+      }
+      
       NewInterface.toString = function () { return interfaceName; };
 
       return NewInterface;

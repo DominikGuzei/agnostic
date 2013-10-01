@@ -22,12 +22,11 @@
    * @returns {function()} constructor The constructor of the created class
    * @expose
    */
-  var Class = function (classPath, classDefinition) {
+  var Class = function (classPath, classDefinition, local) {
     var SuperClass, implementations, NewClass;
 
-    if(arguments.length < 2) {
-      classDefinition = classPath;
-      classPath = null;
+    if(typeof classPath !== 'string') {
+      throw new Error('Please give your class a name. Pass "true" as last parameter to avoid global namespace pollution');
     }
 
     SuperClass = classDefinition['Extends'] || null;
@@ -49,21 +48,17 @@
       }
     }
 
-    if(classPath) {
-      applyConstructorName(NewClass, classPath);
-    }
+    applyConstructorName(NewClass, classPath);
 
     Class['inherit'](NewClass, SuperClass);
 
     Class['implement'](NewClass, implementations);
 
-    if(classPath) {
-      applyClassNameToPrototype(NewClass, classPath);
-    }
+    applyClassNameToPrototype(NewClass, classPath);
 
     Class['extend'](NewClass, classDefinition, true);
 
-    if(classPath != null) {
+    if(!local) {
       Class['namespace'](classPath, NewClass);
     }
 
@@ -198,7 +193,7 @@
    */
   Class['namespace'] = function (namespacePath, exposedObject) {
 
-    if(globalNamespace) {
+    if(typeof globalNamespace['define'] === "undefined") {
       var classPathArray, className, currentNamespace, currentPathItem, index;
     
       classPathArray = namespacePath.split('.');

@@ -3,7 +3,7 @@
 
   function defineInjectorModule(Class, InjectionMapping) {
 
-    return Class({
+    return Class('agnostic.injection.Injector', {
 
       _typeMappings: [],
 
@@ -71,9 +71,9 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'],
-    InjectionMapping = globalNamespace['InjectionMapping'];
+    InjectionMapping = globalNamespace.agnostic.injection.InjectionMapping;
 
-    globalNamespace['agnostic']['Injector'] = defineInjectorModule(Class, InjectionMapping);
+    globalNamespace.agnostic.injection.Injector = defineInjectorModule(Class, InjectionMapping);
   }
   // expose on agnostic namespace (node)
   else {

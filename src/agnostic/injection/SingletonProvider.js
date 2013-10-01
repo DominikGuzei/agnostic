@@ -3,7 +3,7 @@
 
   function defineSingletonProviderModule(Class) {
 
-    return Class({
+    return Class('agnostic.injection.SingletonProvider', {
 
       _type: null,
       _instance : null,
@@ -41,7 +41,7 @@
   else if (typeof window !== "undefined") {
     /** @expose */
     Class = globalNamespace['Class'];
-    globalNamespace['agnostic']['SingletonProvider'] = defineSingletonProviderModule(Class);
+    defineSingletonProviderModule(Class);
   }
   // expose as node module
   else {

@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <title>Mocha</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="mocha.js"></script>
+    <script src="chai.js"></script>
+
+    <script>mocha.setup('bdd')</script>
+
+    <script>
+      var expect = chai.expect;
+    </script>
+
+    <script src="../../src/Class.js"></script>
+    <script src="../../src/Interface.js"></script>
+
+    <script src="../../src/agnostic/agnostic.js"></script>
+
+    <!-- INJECTION -->
+    <script src="../../src/agnostic/injection/SingletonProvider.js"></script>
+    <script src="../../src/agnostic/injection/InjectionMapping.js"></script>
+    <script src="../../src/agnostic/injection/Injector.js"></script>
+
+    <script src="../../spec/agnostic/injection/SingletonProvider.spec.js"></script>
+    <script src="../../spec/agnostic/injection/InjectionMapping.spec.js"></script>
+    <script src="../../spec/agnostic/injection/Injector.spec.js"></script>
+
+    <script>
+      mocha.run();
+    </script>
+  </body>
+</html>

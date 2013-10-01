@@ -1,18 +1,15 @@
 "use strict";
 
-var Class = require('../../../src/Class').Class;
-var Interface = require('../../../src/Interface').Interface;
-
-var InjectionMapping = require('../../../src/agnostic/injection/InjectionMapping').InjectionMapping;
-var SingletonProvider = require('../../../src/agnostic/injection/SingletonProvider').SingletonProvider;
-
 describe('agnostic.injection.InjectionMapping:', function(){
+
+  var InjectionMapping = agnostic.injection.InjectionMapping;
+  var SingletonProvider = agnostic.injection.SingletonProvider;
 
   describe('Use Case: map to singleton provider,', function() {
 
   	beforeEach(function() {
-				this.TestInterface = Interface({});
-  			this.TestClass = Class({});
+				this.TestInterface = Interface('TestInterface', {}, true);
+  			this.TestClass = Class('TestClass', {}, true);
 
   			this.injectionMapping = new InjectionMapping(this.TestInterface).toSingleton(this.TestClass);
 
