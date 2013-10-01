@@ -10,13 +10,13 @@ describe('agnostic.Injector:', function(){
 
     this.InjecteeClass1 = Class('InjecteeClass1', {
       Dependencies: {
-        testInterfaceInstance: this.TestInterface
+        testInstance: this.TestInterface
       }
     }, true);
 
     this.InjecteeClass2 = Class('InjecteeClass2', {
       Dependencies: {
-        testInterfaceInstance: this.TestInterface,
+        testInstance: this.TestInterface,
         injectee1Instance: this.InjecteeClass1
       }
     }, true);
@@ -33,7 +33,7 @@ describe('agnostic.Injector:', function(){
 
     this.injector.injectInto(injectee);
 
-    expect(injectee.testInterfaceInstance).to.be.instanceof(this.TestClass);
+    expect(injectee.testInstance).to.be.instanceof(this.TestClass);
     expect(injectee.injectee1Instance).to.be.instanceof(this.InjecteeClass1);
 
   });
@@ -47,7 +47,7 @@ describe('agnostic.Injector:', function(){
 
     this.injector.injectInto(injectee);
 
-    expect(injectee.injectee1Instance.testInterfaceInstance).to.be.instanceof(this.TestClass);
+    expect(injectee.injectee1Instance.testInstance).to.be.instanceof(this.TestClass);
 
   });
 
@@ -76,8 +76,36 @@ describe('agnostic.Injector:', function(){
       this.injector.injectInto(injectee1);
       this.injector.injectInto(injectee2);
 
-      expect(injectee1.testInterfaceInstance).to.be.instanceof(this.TestClass);
-      expect(injectee2.testInterfaceInstance).to.be.equal(injectee1.testInterfaceInstance);
+      expect(injectee1.testInstance).to.be.instanceof(this.TestClass);
+      expect(injectee2.testInstance).to.be.equal(injectee1.testInstance);
+
+    });
+
+  });
+
+  describe('Use Case: map class as singleton,', function() {
+
+    beforeEach(function() {
+
+      this.InjecteeWithSingletonClassDependency = Class('InjecteeWithSingletonClassDependency', {
+        Dependencies: {
+          testInstance: this.TestClass
+        }
+      }, true);
+
+    });
+
+    it('maps given class to a single instance of it', function() {
+
+      var injectee1 = new this.InjecteeWithSingletonClassDependency();
+      var injectee2 = new this.InjecteeWithSingletonClassDependency();
+
+      this.injector.map(this.TestClass).asSingleton();
+      this.injector.injectInto(injectee1);
+      this.injector.injectInto(injectee2);
+
+      expect(injectee1.testInstance).to.be.instanceof(this.TestClass);
+      expect(injectee2.testInstance).to.be.equal(injectee1.testInstance);
 
     });
 

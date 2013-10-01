@@ -36,6 +36,23 @@ describe('agnostic.injection.InjectionMapping:', function(){
   		expect(this.injectionMapping.getInstance()).to.be.instanceof(this.TestClass);
   	})
 
+    describe('mapping a class as singleton', function() {
+
+      it('returns an instance of the given class', function() {
+        var mapping = new InjectionMapping(this.TestClass).asSingleton();
+
+        expect(mapping.getInstance()).to.be.instanceof(this.TestClass);
+      });
+
+      it('it uses the singleton provider to map the class', function() {
+        var mapping = new InjectionMapping(this.TestClass).asSingleton();
+
+        expect(mapping.getProvider()).to.be.instanceof(SingletonProvider);
+      });
+
+    });
+    
+
   });
 
 });

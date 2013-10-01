@@ -390,6 +390,10 @@
         return this;
       },
 
+      asSingleton: function() {
+        return this.toSingleton(this._requestType);
+      },
+
       getProvider: function() {
         return this._dependencyProvider;
       },
