@@ -459,6 +459,34 @@
       },
       
       injectInto: function(injectee) {
+        this._injectInto(injectee, null);
+      },
+
+      getInstanceFor: function(neededType) {
+        return this._getInstanceFor(neededType, null);
+      },
+
+      _getInstanceFor: function(neededType, requestingType, skipInjection) {
+        var mapping, isCircularDependency, instance = null;
+
+        for(var index = 0; index < this._typeMappings.length; index++) {
+          mapping = this._typeMappings[index];
+
+          if(mapping.getRequestType() === neededType) {
+
+            instance = mapping.getInstance();
+            isCircularDependency = this._typeIsDependentOn(neededType, requestingType) ? true : false;
+
+            if(!skipInjection) {
+              this._injectInto(instance, neededType, requestingType, isCircularDependency);
+            }
+            
+            return instance;
+          }
+        }
+      },
+
+      _injectInto: function(injectee, injecteeType, requestingType, isCircularDependency) {
 
         if(injectee && injectee.Dependencies) {
           var propertyName, neededType, instance, dependencies = injectee.Dependencies;
@@ -467,7 +495,17 @@
 
             if(dependencies.hasOwnProperty(propertyName)) {
               neededType = dependencies[propertyName];
-              instance = this.getInstanceFor(neededType);
+
+              if(isCircularDependency && neededType === requestingType) {
+                
+                // this is a circular dependency situation -> get the instance without injecting
+                // into the first instance again to avoid endless loops.
+                
+                instance = this._getInstanceFor(neededType, injecteeType, true);
+              } 
+              else {
+                instance = this._getInstanceFor(neededType, injecteeType);
+              }
 
               if(instance != null) {
                 injectee[propertyName] = instance;
@@ -481,20 +519,25 @@
         }
       },
 
-      getInstanceFor: function(neededType) {
-        var mapping, instance = null;
+      _typeIsDependentOn: function(dependentType, searchedDependency) {
+        var propertyName, dependencies = dependentType.prototype.Dependencies;
 
-        for(var index = 0; index < this._typeMappings.length; index++) {
-          mapping = this._typeMappings[index];
+        if(typeof dependencies !== 'object' || searchedDependency === null) {
+          return false;
+        }
 
-          if(mapping.getRequestType() === neededType) {
+        for(propertyName in dependencies) {
+          
+          if(dependencies.hasOwnProperty(propertyName)) {
 
-            instance = mapping.getInstance();
-            this.injectInto(instance);
-
-            return instance;
+            if(dependencies[propertyName] === searchedDependency) {
+              return true;
+            }
           }
         }
+
+        // searchedDependency was not found on dependentType
+        return false;
       }
 
     });

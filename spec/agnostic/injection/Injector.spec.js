@@ -51,6 +51,34 @@ describe('agnostic.Injector:', function(){
 
   });
 
+  it('handles circular dependencies correctly', function() {
+
+    var CircularDependency1 = Class('CircularDependency1', {}, true);
+    var CircularDependency2 = Class('CircularDependency2', {}, true);
+
+    Class.extend(CircularDependency1, {
+      Dependencies: {
+        circularInstance2: CircularDependency2
+      }
+    });
+
+    Class.extend(CircularDependency2, {
+      Dependencies: {
+        circularInstance1: CircularDependency1
+      }
+    });
+
+    this.injector.map(CircularDependency1).asSingleton();
+    this.injector.map(CircularDependency2).asSingleton();
+
+    var circularInstance1 = this.injector.getInstanceFor(CircularDependency1);
+    var circularInstance2 = this.injector.getInstanceFor(CircularDependency2);
+
+    expect(circularInstance1.circularInstance2).to.equal(circularInstance2);
+    expect(circularInstance2.circularInstance1).to.equal(circularInstance1);
+
+  });
+
   it('throws an error when required dependency was not configured', function() {
 
     var injectee = new this.InjecteeClass2(),
